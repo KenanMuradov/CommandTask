@@ -23,15 +23,18 @@ while (true)
         continue;
     }
 
-    var commandProperties = userCommand.Split(' ');
+    userCommand = userCommand.Trim();
 
-    if (commandProperties.Length > 2)
+    var temp = userCommand.Split(' ');
+
+    var commandProperties = new List<string>();
+
+    for (int i = 0; i < temp.Length; i++)
     {
-        Console.WriteLine("Given command does not match any template. Press any key to continue...");
-        Console.ReadKey();
-        Console.Clear();
-        continue;
+        if (!string.IsNullOrWhiteSpace(temp[i]))
+            commandProperties.Add(temp[i].Trim());
     }
+
 
     CommandTexts commandText = commandProperties[0].ToLower() switch
     {
@@ -43,7 +46,7 @@ while (true)
     };
 
     string? commandParameter = default;
-    if (commandProperties.Length == 2)
+    if (commandProperties.Count == 2)
         commandParameter = commandProperties[1];
 
 
