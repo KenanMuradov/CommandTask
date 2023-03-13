@@ -18,7 +18,7 @@ while (true)
 
     Console.WriteLine($"Client {client.Client.RemoteEndPoint} accepted");
 
-    await Task.Run(() =>
+    Task.Run(() =>
     {
         var stream = client.GetStream();
         var bw = new BinaryWriter(stream);
