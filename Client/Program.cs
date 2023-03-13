@@ -149,7 +149,7 @@ while (true)
 
                 if (string.IsNullOrWhiteSpace(command.Parameter))
                 {
-                    Console.WriteLine("You must declare <process name> to use 'kill' command. Press any key to continue...");
+                    Console.WriteLine("You must declare <process name> to use 'run' command. Press any key to continue...");
                     Console.ReadKey();
                     Console.Clear();
                     continue;
@@ -176,7 +176,12 @@ while (true)
                 break;
             }
         case CommandTexts.Unkown:
-            break;
+            {
+                Console.WriteLine("Unknown command. Please use 'help' command to find what you want.\nPress any key to continue");
+                Console.ReadKey();
+                Console.Clear();
+                break;
+            }
 
     }
 
