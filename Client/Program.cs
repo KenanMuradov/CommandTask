@@ -57,27 +57,93 @@ while (true)
     switch (commandText)
     {
         case CommandTexts.Help:
-            if(!string.IsNullOrWhiteSpace(command.Parameter))
             {
-                Console.WriteLine("HELP command does not accept any parameter. Press any key to continue...");
+                if (!string.IsNullOrWhiteSpace(command.Parameter))
+                {
+                    Console.WriteLine("'help' command does not accept any parameter. Press any key to continue...");
+                    Console.ReadKey();
+                    Console.Clear();
+                    continue;
+                }
+
+                var jsonStr = JsonSerializer.Serialize(command);
+
+                bw.Write(jsonStr);
+
+                await Task.Delay(50);
+
+                var response = br.ReadString();
+                Console.WriteLine(response);
+                Console.WriteLine("\nPress any key to continue...");
                 Console.ReadKey();
                 Console.Clear();
-                continue;
+                break;
             }
-
-            var jsonStr = JsonSerializer.Serialize(command);
-
-            bw.Write(jsonStr);
-
-            await Task.Delay(50);
-
-            var s =br.ReadString();
-            Console.WriteLine(s);
-            break;
         case CommandTexts.Proclist:
-            break;
+            {
+                if (!string.IsNullOrWhiteSpace(command.Parameter))
+                {
+                    Console.WriteLine("'proclist' command does not accept any parameter. Press any key to continue...");
+                    Console.ReadKey();
+                    Console.Clear();
+                    continue;
+                }
+                var jsonStr = JsonSerializer.Serialize(command);
+
+                bw.Write(jsonStr);
+
+                await Task.Delay(50);
+
+                var response = br.ReadString();
+                var list = JsonSerializer.Deserialize<List<string>>(response);
+
+                if(list is null)
+                {
+                    Console.WriteLine("Something went wrong. Press any key to continue...");
+                    Console.ReadKey();
+                    Console.Clear();
+                    continue;
+                }
+                Console.WriteLine();
+                foreach (var processName in list)
+                    Console.WriteLine(processName);
+
+                Console.WriteLine("\nPress any key to continue...");
+                Console.ReadKey();
+                Console.Clear();
+                break;
+            }
         case CommandTexts.Kill:
-            break;
+            {
+
+                if (string.IsNullOrWhiteSpace(command.Parameter))
+                {
+                    Console.WriteLine("You must declare <process name> to use 'kill' command. Press any key to continue...");
+                    Console.ReadKey();
+                    Console.Clear();
+                    continue;
+                }
+                var jsonStr = JsonSerializer.Serialize(command);
+
+                bw.Write(jsonStr);
+
+                await Task.Delay(50);
+
+                var response = br.ReadBoolean();
+                if(response is true)
+                {
+                    Console.WriteLine("Process succesfully ended. Press any key to continue...");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+                else
+                {
+                    Console.WriteLine("Process cannot be ended there is no active process by this name or access denied. \nPress any key to continue...");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+                break;
+            }
         case CommandTexts.Run:
             break;
         case CommandTexts.Unkown:
