@@ -62,7 +62,7 @@ while (true)
                         var canKill = false;
                         var processes = Process.GetProcessesByName(command.Parameter);
 
-                        if(processes.Length>0)
+                        if (processes.Length > 0)
                         {
                             try
                             {
@@ -78,7 +78,21 @@ while (true)
                         break;
                     }
                 case CommandTexts.Run:
-                    break;
+                    {
+                        var canRun = false;
+
+                        if(command.Parameter is not null)
+                        {
+                            try
+                            {
+                                Process.Start(command.Parameter);
+                                canRun = true;
+                            }
+                            catch (Exception) { }
+                        }
+                        bw.Write(canRun);
+                        break;
+                    }
                 case CommandTexts.Unkown:
                     break;
                 default:

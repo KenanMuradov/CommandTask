@@ -145,7 +145,36 @@ while (true)
                 break;
             }
         case CommandTexts.Run:
-            break;
+            {
+
+                if (string.IsNullOrWhiteSpace(command.Parameter))
+                {
+                    Console.WriteLine("You must declare <process name> to use 'kill' command. Press any key to continue...");
+                    Console.ReadKey();
+                    Console.Clear();
+                    continue;
+                }
+                var jsonStr = JsonSerializer.Serialize(command);
+
+                bw.Write(jsonStr);
+
+                await Task.Delay(50);
+
+                var response = br.ReadBoolean();
+                if (response is true)
+                {
+                    Console.WriteLine("Process succesfully started. Press any key to continue...");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+                else
+                {
+                    Console.WriteLine("Process cannot be run maybe name is incorrect or access denied. \nPress any key to continue...");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+                break;
+            }
         case CommandTexts.Unkown:
             break;
 
