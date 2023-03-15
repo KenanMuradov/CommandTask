@@ -1,5 +1,6 @@
 ﻿using Models.Classes;
 using Models.Enums;
+using Server;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
@@ -18,7 +19,8 @@ while (true)
 
     Console.WriteLine($"Client {client.Client.RemoteEndPoint} accepted");
 
-    Task.Run(() =>
+
+    new Task(() =>
     {
         var stream = client.GetStream();
         var bw = new BinaryWriter(stream);
@@ -36,69 +38,34 @@ while (true)
             {
                 case CommandTexts.Help:
                     {
-                        StringBuilder builder = new StringBuilder();
-                        builder.Append("\nproclist".PadRight(40));
-                        builder.Append("see all processes");
-                        builder.Append("\nkill <process name>".PadRight(40));
-                        builder.Append("end the given process");
-                        builder.Append("\nrun <process name>".PadRight(40));
-                        builder.Append("run the given process");
-                        bw.Write(builder.ToString());
+                        var helpText = ExecuteServerCommands.HelpText();
+                        bw.Write(helpText);
                         stream.Flush();
                         break;
                     }
                 case CommandTexts.Proclist:
                     {
-                        var list = Process.GetProcesses()
-                        .Select(p => p.ProcessName)
-                        .ToList();
-                        var jsonList = JsonSerializer.Serialize(list);
+                        var jsonList=ExecuteServerCommands.GetProcessListJson();
                         bw.Write(jsonList);
                         stream.Flush();
                         break;
                     }
                 case CommandTexts.Kill:
                     {
-                        var canKill = false;
-                        var processes = Process.GetProcessesByName(command.Parameter);
-
-                        if (processes.Length > 0)
-                        {
-                            try
-                            {
-                                foreach (var p in processes)
-                                    p.Kill();
-
-                                canKill = true;
-                            }
-                            catch (Exception) { }
-                        }
-
+                        var canKill = ExecuteServerCommands.KillProcess(command.Parameter);
                         bw.Write(canKill);
                         break;
                     }
                 case CommandTexts.Run:
                     {
-                        var canRun = false;
-
-                        if(command.Parameter is not null)
-                        {
-                            try
-                            {
-                                Process.Start(command.Parameter);
-                                canRun = true;
-                            }
-                            catch (Exception) { }
-                        }
+                        var canRun = ExecuteServerCommands.RunProcess(command.Parameter);
                         bw.Write(canRun);
                         break;
                     }
                 case CommandTexts.Unkown:
                     break;
-                default:
-                    break;
             }
         }
-    });
+    }).Start();
 }
 
